@@ -1,0 +1,44 @@
+---
+title: "DMP"
+author: "Javier Pena-Bastidas, *Mc Master University PhD student*"
+date: "02/01/2022"
+output: html_document
+---
+
+## Project Data Analysis
+
+**List the data that you expect to use, collect or create in your project. Identify if you are generating or collecting the data and if you are using existing datasets?** 
+(Colected = C, Existing= E)
+
+1. Survey from WG1 | (C)
+2. Land use datasets | (E)
+3. Public transport infraestructure shp | (E)
+
+
+**Are there legal or ethicial restrictions that you will need to address?**
+
+We will commply with the abeas data law and also an ethic committee will review all the survey instruments 
+
+
+**Go through the Quick Hits for Data Management and identify possible strategies to build and protect the value of your data.**
+
+<ins>Where will you keep raw data and how will you back it up?</ins>   
+
+I will keep records on an external hard drive and upload it continously to the google cloud and onedrive (check if 3, 2, 1 apply)  
+There will be explicitly dates on the timeline to make information back ups 
+
+<ins>What file formats do you anticipate your data will be in? Are the formats open or can they be converted to open formats?</ins>  
+
+All data will come in csv and shp format, Will find a better way to keep the shp
+
+<ins>Create a File naming convention for your project data</ins>  
+
+yymmdd_T_V1.shp where T stands for Transport information, (LU = Land Use, PT = Public transport)
+
+<ins>What standards are relevant to your project? List any existing standards or best practices in use in your field or in your lab? This could include instrument procedures or file management standards. What standards might you want to create to help you manage your data?</ins>  
+
+I will create a standard for documenting created fields during the data processing, all shapefiles must have a dictionary 
+
+<ins>List possible strategies you might use to document your data throughout your project.</ins>  
+
+A screening will be done regularly to identify possible deviations from the standards 
