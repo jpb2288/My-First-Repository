@@ -1,0 +1,1758 @@
+{UTF-8}
+ac i[i]=
+	IF THEN ELSE((ac sobrante total/148)+ ac e2 i[i]> area sin construir i t0[i] + ac i t0\
+		[i] , 
+	area sin construir i t0[i] + ac i t0[i], 
+	ac e2 i[i] + (ac sobrante total/148))
+	~	m2
+	~		|
+
+proporcion hogares r i t0[i , IM]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B8' ) ~~|
+proporcion hogares r i t0[i, IA]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B9' )
+	~	porc
+	~		|
+
+hogares r i t0[i, IB]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B5' ) ~~|
+hogares r i t0[i, IM]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B6' ) ~~|
+hogares r i t0[i, IA]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B7' )
+	~	
+	~		|
+
+proporcion hogares r i[i, IB]=
+	100- IF THEN ELSE( Time = 2017 , proporcion hogares r i t0[i,IM] , (hogares r i[i,IM\
+		]/ hogares i[i])*100 ) - IF THEN ELSE( Time = 2017 , proporcion hogares r i t0[i,IA\
+		], (hogares r i[i,IA]/ hogares i[i])*100 ) ~~|
+proporcion hogares r i[i, IM]=
+	IF THEN ELSE( Time = 2017 , proporcion hogares r i t0[i,IM] , (hogares r i[i,IM]/ hogares i\
+		[i])*100 ) ~~|
+proporcion hogares r i[i, IA]=
+	IF THEN ELSE( Time = 2017 , proporcion hogares r i t0[i,IA], (hogares r i[i,IA]/ hogares i\
+		[i])*100 )
+	~	porc
+	~		|
+
+AUX PART r i[i,IB]=
+	EXP(
+	+ (0.541*LN(accesibilidad i[i]))
+	+ 0.317*ac por uso i[i,RESIDENCIAL]/1e+006 
+	- 0.023*(area sin construir i[i]/1e+006) 
+	- 0.0183*proporcion hogares r i[i,IM]
+	- 0.0605*proporcion hogares r i[i,IA]
+	+ 1.86e-005*coorx i[i]
+	+ 1.16e-005*coory i[i]) ~~|
+AUX PART r i[i,IM]=
+	EXP(
+	+ (0.4*LN(accesibilidad i[i]))
+	+ 0.361*ac por uso i[i,RESIDENCIAL]/1e+006 
+	- 0.0479*(area sin construir i[i]/1e+006) 
+	+ 0.0343*proporcion hogares r i[i,IM]
+	- 0.00271*proporcion hogares r i[i,IA]
+	+ 6.56e-006*coorx i[i]
+	+ 9.92e-006*coory i[i]) ~~|
+AUX PART r i[i,IA]=
+	EXP(
+	+ (0.0666*LN(accesibilidad i[i]))
+	+ 0.409*ac por uso i[i,RESIDENCIAL]/1e+006 
+	- 0.0692*(area sin construir i[i]/1e+006)  
+	+ 0.0723*proporcion hogares r i[i,IM]
+	+ 0.0822*proporcion hogares r i[i,IA]
+	+ 5.58e-006*coorx i[i]
+	- 3.81e-006*coory i[i])
+	~	Dmnl
+	~		|
+
+utilidad ij por modo[i,j,MOTO]=
+	-1.30415+
+	(-0.141443- 0.0352247*(prop pers no ocupadas i[i]/100)-0.0551361*(proporcion hogares grandes i\
+		[i]/100))*costo de viaje ij por modo[i,j,MOTO]+
+	(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100))*tiempo de viaje ij por modo[i,j,
+	MOTO] ~~|
+utilidad ij por modo[i,j,AUTO]=
+	(-0.141443- 0.0352247*(prop pers no ocupadas i[i]/100)-0.0551361*(proporcion hogares grandes i\
+		[i]/100))*costo de viaje ij por modo[i,j,AUTO]+
+	(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100))*tiempo de viaje ij por modo[i,j,
+	AUTO] ~~|
+utilidad ij por modo[i,j,TM]=
+	-0.925335+
+	(-0.141443- 0.0352247*(prop pers no ocupadas i[i]/100)-0.0551361*(proporcion hogares grandes i\
+		[i]/100))*costo de viaje ij por modo[i,j,TM]+
+	(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100))*tiempo de viaje ij por modo[i,j,
+	TM]
+	-0.506507*(proporcion mujeres i[i]/100) ~~|
+utilidad ij por modo[i,j,BUS]=
+	(-0.141443-0.0352247*(prop pers no ocupadas i[i]/100)-0.0551361*(proporcion hogares grandes i\
+		[i]/100))*costo de viaje ij por modo[i,j,BUS]+
+	(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100))*tiempo de viaje ij por modo[i,j,
+	BUS]
+	-0.648665*(proporcion mujeres i[i]/100) ~~|
+utilidad ij por modo[i,j,METRO]=
+	1.91919*1.05126+
+	(-0.141443-0.0352247*(prop pers no ocupadas i[i]/100)-0.0551361*(proporcion hogares grandes i\
+		[i]/100))*costo de viaje ij por modo[i,j,METRO]+
+	(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100))*tiempo de viaje ij por modo[i,j,
+	METRO]
+	-0.467824*1.05126*(proporcion mujeres i[i]/100) ~~|
+utilidad ij por modo[i,j,TREN]=
+	0.820288*1.051+
+	(-0.141443-0.0352247*(prop pers no ocupadas i[i]/100)-0.0551361*(proporcion hogares grandes i\
+		[i]/100))*costo de viaje ij por modo[i,j,TREN]+
+	(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100))*tiempo de viaje ij por modo[i,j,
+	TREN]
+	-0.814992*1.05126*(proporcion mujeres i[i]/100) ~~|
+utilidad ij por modo[i,j,BICI]=
+	-2.42437+
+	(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100))*tiempo de viaje ij por modo[i,j,
+	BICI] ~~|
+utilidad ij por modo[i,j,PIE]=
+	0.271472+
+	(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100))*tiempo de viaje ij por modo[i,j,
+	PIE]
+	~	Dmnl
+	~		|
+
+tiempo generalizado ij[i,j]=
+	(1/(-0.0234931+(0.0119146*1.05126*proporcion hogares r i[i,IB]/100)+(-0.0266917*proporcion hogares r i\
+		[i,IA]/100)))* LN(aux pm
+	[i,j])
+	~	min
+	~		|
+
+generacion por hogar i[i]=
+	0.421816 +
+	0.116966 *(proporcion hogares r i[i,IM]/100)+
+	0.290986 *(proporcion hogares r i[i,IA]/100)+
+	((-0.05578*proporcion hogares con auto i[i]/100) + 0.410156) * habitantes por hogar i\
+		[i]+
+	0.112883 * (proporcion hogares con auto i[i]/100)+
+	0.160209 * (proporcion hogares con moto i[i]/100)
+	~	viaj
+	~		|
+
+hogares r i[i, IB]= INTEG (
+	hogares nuevos r i[i,IB],
+		hogares r i t0[i,IB]) ~~|
+hogares r i[i, IM]= INTEG (
+	hogares nuevos r i[i,IM],
+		hogares r i t0[i,IM]) ~~|
+hogares r i[i, IA]= INTEG (
+	hogares nuevos r i[i,IA],
+		hogares r i t0[i,IA])
+	~	
+	~		|
+
+generacion i[i]=
+	generacion por hogar i[i]*(hogares i[i]*0.715)
+	~	viaj
+	~	0.715 ajusta por los hogares que no realizan viajes al trabajo o estudio \
+		en los modos del estudio o van a zonas externas
+	|
+
+SC:
+	a117,a118,a119,a120,a121,a122,a127,a128,a129,a130,a139,a140,a141,a142,a143,a144,a145\
+		,a146,a147,a148
+	~	
+	~		|
+
+BOGOTA:
+	a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24\
+		,a25,a26,a27,a28,a29,a30,a31,a32,a33,a34,a35,a36,a37,a38,a39,a40,a41,a42,a43,a44,a45\
+		,a46,a47,a48,a49,a50,a51,a52,a53,a54,a55,a56,a57,a58,a59,a60,a61,a62,a63,a64,a65,a66\
+		,a67,a68,a69,a70,a71,a72,a73,a74,a75,a76,a77,a78,a79,a80,a81,a82,a83,a84,a85,a86,a87\
+		,a88,a89,a90,a91,a92,a93,a94,a95,a96,a97,a98,a99,a100,a101,a102,a103,a104,a105,a106\
+		,a107,a108,a109,a110,a111,a112,a113,a114
+	~	
+	~		|
+
+SO:
+	a115,a116,a124,a123,a125,a126,a131,a132,a133,a134
+	~	
+	~		|
+
+SS:
+	a135,a136,a137,a138
+	~	
+	~		|
+
+ac proyectada i[i]=
+	b1 i[i]/(1+EXP(-1*b2 i[i]*(Time-b3 i[i])))
+	~	m2
+	~		|
+
+ac sobrante e2 i[i]=
+	IF THEN ELSE(  ac proyectada i[i] + ac reubicada i[i]>  ac i t0[i]+area sin construir i t0\
+		[i], 
+	ac proyectada i[i] + ac reubicada i[i] - (area sin construir i t0[i]+ac i t0[i]),0)
+	~	m2
+	~		|
+
+ac e2 i[i]=
+	IF THEN ELSE( ac proyectada i[i] + ac reubicada i[i] >=  ac i t0[i]+area sin construir i t0\
+		[i], 
+	ac i t0[i]+area sin construir i t0[i] ,
+	ac proyectada i[i] + ac reubicada i[i])
+	~	m2
+	~		|
+
+total viajes por modo[MODO]=
+	SUM(viajes por modo ij[i!,j!,MODO])
+	~	viaj
+	~		|
+
+atraccion j sin ajustar[j]=
+	60.051 *(ac por uso i[j,RESIDENCIAL]/10000)+
+	334.154*((ac por uso i[j,COMERCIAL]+ac por uso i[j,DOTACIONAL]+ac por uso i[j,INDUSTRIAL\
+		])/10000)
+	~	viaj
+	~		|
+
+factor ajuste atraccion=
+	generacion total/atraccion total
+	~	Dmnl
+	~		|
+
+area sin construir i t0[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','A1-betas_modelo', 'B5')
+	~	m2
+	~		|
+
+ac e1 i[i]=
+	IF THEN ELSE( ac proyectada i[i] <= (ac i t0[i]+area sin construir i t0[i]) , 
+	ac proyectada i[i] , 
+	ac i t0[i]+area sin construir i t0[i] )
+	~	m2
+	~		|
+
+area sin construir i[i]=
+	ac i t0[i]+area sin construir i t0[i]-ac i[i]
+	~	m2
+	~		|
+
+ac sobrante e1 i[i]=
+	IF THEN ELSE(ac i t0[i]+area sin construir i t0[i]-1 < ac e1 i[i] :AND: ac e1 i[i]< \
+		ac i t0[i]+area sin construir i t0[i]+1, 
+	ac proyectada i[i]-area sin construir i t0[i]-ac i t0[i] , 
+	0 )
+	~	m2
+	~		|
+
+ac residencial r i[i, IB]= INTEG (
+	ac nueva residencial r i[i,IB],
+		ac residencial r i t0[i,IB]) ~~|
+ac residencial r i[i, IM]= INTEG (
+	ac nueva residencial r i[i,IM],
+		ac residencial r i t0[i,IM]) ~~|
+ac residencial r i[i, IA]= INTEG (
+	ac nueva residencial r i[i,IA],
+		ac residencial r i t0[i,IA])
+	~	m2
+	~		|
+
+ac residencial r i t0[i, IB]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B13' ) ~~|
+ac residencial r i t0[i, IM]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B14' ) ~~|
+ac residencial r i t0[i, IA]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B15' )
+	~	m2
+	~		|
+
+ac por uso i t0[i, RESIDENCIAL]=
+	GET DIRECT CONSTANTS('Input.xlsx','Atrac', 'B4') ~~|
+ac por uso i t0[i, COMERCIAL]=
+	GET DIRECT CONSTANTS('Input.xlsx','Atrac', 'B6') ~~|
+ac por uso i t0[i,INDUSTRIAL]=
+	GET DIRECT CONSTANTS('Input.xlsx','Atrac', 'B7') ~~|
+ac por uso i t0[i,DOTACIONAL]=
+	GET DIRECT CONSTANTS('Input.xlsx','Atrac', 'B5') ~~|
+ac por uso i t0[i,RURAL]=
+	GET DIRECT CONSTANTS('Input.xlsx','Atrac', 'B9')
+	~	
+	~		|
+
+ac por uso i[i,RESIDENCIAL]= INTEG (
+	ac nueva por uso i[i,RESIDENCIAL],
+		ac por uso i t0[i,RESIDENCIAL]) ~~|
+ac por uso i[i,COMERCIAL]= INTEG (
+	ac nueva por uso i[i,COMERCIAL],
+		ac por uso i t0[i,COMERCIAL]) ~~|
+ac por uso i[i, INDUSTRIAL]= INTEG (
+	ac nueva por uso i[i,INDUSTRIAL],
+		ac por uso i t0[i,INDUSTRIAL]) ~~|
+ac por uso i[i, DOTACIONAL]= INTEG (
+	ac nueva por uso i[i,DOTACIONAL],
+		ac por uso i t0[i,DOTACIONAL]) ~~|
+ac por uso i[i, RURAL]= INTEG (
+	ac nueva por uso i[i,RURAL],
+		ac por uso i t0[i,RURAL])
+	~	m2
+	~		|
+
+ac sobrante total=
+	SUM(ac sobrante e2 i[i!])
+	~	m2
+	~		|
+
+ac nueva residencial r i[i,IB]=
+	(ac nueva por uso i[i,RESIDENCIAL]*proporcion hogares nuevos r i[i,IB]/100) ~~|
+ac nueva residencial r i[i,IM]=
+	(ac nueva por uso i[i,RESIDENCIAL]*proporcion hogares nuevos r i[i,IM]/100) ~~|
+ac nueva residencial r i[i,IA]=
+	(ac nueva por uso i[i,RESIDENCIAL]*proporcion hogares nuevos r i[i,IA]/100)
+	~	m2
+	~		|
+
+hogares nuevos r i[i,IB]=
+	ac nueva residencial r i[i,IB]/m2 x vivienda r i[i,IB] ~~|
+hogares nuevos r i[i,IM]=
+	ac nueva residencial r i[i,IM]/m2 x vivienda r i[i,IM] ~~|
+hogares nuevos r i[i,IA]=
+	ac nueva residencial r i[i,IA]/m2 x vivienda r i[i,IA]
+	~	hog
+	~		|
+
+empleo nuevo i[i]=
+	(ac nueva por uso i[i,COMERCIAL]/ 32.43)+ (ac nueva por uso i[i,INDUSTRIAL]/ 21.43)
+	~	emp
+	~		|
+
+empleo i t0[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','Eleccion', 'B14')
+	~	
+	~		|
+
+accesibilidad ij[i,j]=
+	empleo i[j]*EXP(beta accesibilidad i[i]*tiempo generalizado ij[i,j])
+	~	Dmnl
+	~		|
+
+empleo i[i]= INTEG (
+	empleo nuevo i[i],
+		empleo i t0[i])
+	~	
+	~		|
+
+accesibilidad i[i]=
+	SUM(accesibilidad ij[i,j!])
+	~	Dmnl
+	~		|
+
+utilidad por uso i[i,RESIDENCIAL]=
+	1 ~~|
+utilidad por uso i[i,COMERCIAL]=
+	EXP( -7.567 + 0.0305011*(accesibilidad i[i]/10000 )+ (-0.526473)*dvias i[i]+ 0.882123\
+		*(porcentaje suelo urbano i[i]/100) + 1.50584*(suelo de expansion i[i]/100)+ 0.752758\
+		*(suelo subu i[i]/100)+4.94e-005*coorx i[i]+7.83e-006*coory i[i]) ~~|
+utilidad por uso i[i,INDUSTRIAL]=
+	EXP( -0.846227 + 0.0205725*(accesibilidad i[i]/10000 ) -0.0859613*dvias i[i]-1.33405\
+		*(porcentaje suelo urbano i[i]/100) -0.72869*(suelo de expansion i[i]/100)+2.55837*\
+		(suelo subu i[i]/100)-4.31e-005*coorx i[i]+3.74e-006*coory i[i]) ~~|
+utilidad por uso i[i,DOTACIONAL]=
+	EXP( -5.199 + 0.0071589*(accesibilidad i[i]/10000 )+ (-0.0079294)*dvias i[i]-0.132656\
+		*(porcentaje suelo urbano i[i]/100) + 0.424773*(suelo de expansion i[i]/100)-0.281648\
+		*(suelo subu i[i]/100)+2.02e-005*coorx i[i]-4.62e-007*coory i[i]) ~~|
+utilidad por uso i[i,RURAL]=
+	EXP( 3.199 -0.243696*(accesibilidad i[i]/10000 ) + 0.359018*dvias i[i]-7.7944*(porcentaje suelo urbano i\
+		[i]/100) -1.47475*(suelo de expansion i[i]/100)-0.762981*(suelo subu i[i]/100)-1.05e-005\
+		*coorx i[i]-2.18e-005*coory i[i])
+	~	
+	~		|
+
+deficit de vivienda=
+	total hogares - total hogares DANE
+	~	hog
+	~		|
+
+hogares nuevos DANE=
+	total hogares DANE*tasa de crecimiento hogares DANE
+	~	hog
+	~		|
+
+total hogares DANE= INTEG (
+	hogares nuevos DANE,
+		total hogares t0)
+	~	hog
+	~		|
+
+total hogares t0=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Hogares Totales' , 'B2' )
+	~	hog
+	~		|
+
+tasa de crecimiento hogares DANE=
+	EXP(92.6345-(0.0479021*(Time+1)))
+	~	Dmnl
+	~		|
+
+total hogares=
+	SUM(hogares i[i!])
+	~	hog
+	~		|
+
+ac nueva por uso i[i,RESIDENCIAL]=
+	ac nueva i[i]*probabilidades por uso i[i,RESIDENCIAL] ~~|
+ac nueva por uso i[i,COMERCIAL]=
+	ac nueva i[i]*probabilidades por uso i[i,COMERCIAL] ~~|
+ac nueva por uso i[i, INDUSTRIAL]=
+	ac nueva i[i]*probabilidades por uso i[i,INDUSTRIAL] ~~|
+ac nueva por uso i[i,DOTACIONAL]=
+	ac nueva i[i]*probabilidades por uso i[i,DOTACIONAL] ~~|
+ac nueva por uso i[i,RURAL]=
+	ac nueva i[i]*probabilidades por uso i[i,RURAL]
+	~	m2
+	~		|
+
+hogares i[i]=
+	hogares r i[i,IB] + hogares r i[i,IM] + hogares r i[i,IA]
+	~	hog
+	~		|
+
+suelo subu i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','A2-variables_llenado', 'B5' )
+	~	porc
+	~		|
+
+porcentaje suelo urbano i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','A2-variables_llenado', 'B6' )
+	~	porc
+	~		|
+
+suelo de expansion i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','A2-variables_llenado', 'B4' )
+	~	porc
+	~		|
+
+"ac i t-1"[i]= DELAY FIXED (
+	ac i[i], 1, 0)
+	~	m2
+	~		|
+
+ac nueva i[i]=
+	IF THEN ELSE(Time=2017, 0 , ac i[i]-"ac i t-1"[i])
+	~	m2
+	~		|
+
+m2 x vivienda r i[i, IB]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B12' ) ~~|
+m2 x vivienda r i[i, IM]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B12' ) ~~|
+m2 x vivienda r i[i, IA]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B12' )
+	~	m2/viv
+	~		|
+
+coorx i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B10' )
+	~	Dmnl
+	~		|
+
+proporcion hogares nuevos r i[i,IB]=
+	(AUX PART r i[i,IB]/(AUX PART r i[i,IB]+AUX PART r i[i,IM]+AUX PART r i[i,IA]))*100 ~~|
+proporcion hogares nuevos r i[i,IM]=
+	(AUX PART r i[i,IM]/(AUX PART r i[i,IB]+AUX PART r i[i,IM]+AUX PART r i[i,IA]))*100 ~~|
+proporcion hogares nuevos r i[i,IA]=
+	(AUX PART r i[i,IA]/(AUX PART r i[i,IB]+AUX PART r i[i,IM]+AUX PART r i[i,IA]))*100
+	~	porc
+	~		|
+
+coory i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'Residencial' , 'B11' )
+	~	Dmnl
+	~		|
+
+ac a repartir en vecinos ij[i,j]=
+	ac sobrante e1 i[i] * matriz transpuesta de contiguidad ji[i,j]
+	~	m2
+	~		|
+
+matriz transpuesta de contiguidad ji[i,j]=
+	GET DIRECT CONSTANTS('Input.xlsx','A1-matriz_contiguidad', 'B2')
+	~	Dmnl
+	~		|
+
+"velocidad ij t-1"[i,j]= DELAY FIXED (
+	 velocidad ij[i,j] , 1 , velocidad ij t0[i,j])
+	~	km/hr
+	~		|
+
+fvel metro=
+	1.5
+	~	
+	~		|
+
+fvel bus ij[i,j]=
+	GET DIRECT CONSTANTS('Input.xlsx','fvel BUS', 'B2')
+	~	Dmnl
+	~	Se utiliza un factor de 0.64 para viajes intermunicipales y uno de \
+		0.805903 para los viajes internos. Factores tomados de la encuensta de \
+		movilidad 2015. Se entiende que los viajes intermunicipales implican mayor \
+		congestion al ingreso de las ciudades en la hora pico.
+	|
+
+fvel moto=
+	1.30939
+	~	Dmnl
+	~		|
+
+factor demanda i[i]=
+	zidz("viajes carro i t-1"[i],viajes carro i t0[i])
+	~	Dmnl
+	~		|
+
+factor demanda ij[i,j]=
+	MAX(0,(1+(factor demanda i[i]-1)*(distancia viaje ij[i,i]/distancia viaje ij[i,j]/2)\
+		+(factor demanda j[j]-1)*(distancia viaje ij[j,j]/distancia viaje ij[i,j]/2))/(1+(capacidad via\
+		-1)*(distancia viaje ij[i,i]/distancia viaje ij[i,j])+(capacidad via-1)*(distancia viaje ij\
+		[j,j]/distancia viaje ij[i,j])))
+	~	Dmnl
+	~		|
+
+factor demanda j[j]=
+	zidz("viajes carro j t-1"[j],viajes carro j t0[j])
+	~	Dmnl
+	~		|
+
+distancia viaje ij[i,j]=
+	GET DIRECT CONSTANTS('Input.xlsx','DIST', 'B2')
+	~	km
+	~		|
+
+capacidad via=
+	IF THEN ELSE( Time = 2017 , 0 , 1 )
+	~	Dmnl
+	~		|
+
+viajes por modo ij t0[i,j,MODO]= INITIAL(
+	 viajes por modo ij[i,j,MODO])
+	~	viaj
+	~		|
+
+viajes carro i t0[i]=
+	SUM( viajes por modo ij t0[i,j!,AUTO] )
+	~	viaj
+	~		|
+
+viajes carro j t0[j]=
+	SUM( viajes por modo ij t0[i!,j,AUTO] )
+	~	viaj
+	~		|
+
+velocidad ij[i,j]=
+	MAX(5, 
+	IF THEN ELSE(Time<2017.5,
+	vel flujo libre ij[i,j]/(1+intercept ij ASIG[i,j]*(factor demanda ij t0[i,j])^betas ij ASIG\
+		[i,j]),
+	vel flujo libre ij[i,j]/(1+intercept ij ASIG[i,j]*(factor demanda ij t0[i,j]*factor demanda ij\
+		[i,j])^betas ij ASIG[i,j])))
+	~	km/hr
+	~		|
+
+factor demanda ij t0[i,j]=
+	IF THEN ELSE( (intercept ij ASIG[i,j]*velocidad ij t0[i,j])=0 ,
+	 0 ,
+	((vel flujo libre ij[i,j]-velocidad ij t0[i,j])/(intercept ij ASIG[i,j]*velocidad ij t0\
+		[i,j]))^(1/betas ij ASIG[i,j])
+	)
+	~	Dmnl
+	~		|
+
+"viajes carro j t-1"[j]=
+	SUM( "viajes carro ij t-1"[i!,j] )
+	~	viaj
+	~		|
+
+betas ij ASIG[i,j]=
+	GET DIRECT CONSTANTS('Input.xlsx','betas', 'B2')
+	~	Dmnl
+	~		|
+
+"viajes carro i t-1"[i]=
+	SUM( "viajes carro ij t-1"[i,j!] )
+	~	viaj
+	~		|
+
+"viajes carro ij t-1"[i,j]= DELAY FIXED (
+	 viajes por modo ij[i,j,AUTO] , 1 , viajes por modo ij t0[i,j,AUTO])
+	~	viaj
+	~		|
+
+intercept ij ASIG[i,j]=
+	GET DIRECT CONSTANTS('Input.xlsx','Inter', 'B2')
+	~	Dmnl
+	~		|
+
+vel flujo libre ij[i,j]=
+	GET DIRECT CONSTANTS('Input.xlsx','v0', 'B2')
+	~	km/hr
+	~		|
+
+velocidad ij t0[i,j]=
+	GET DIRECT CONSTANTS('Input.xlsx','vCur', 'B2')
+	~	km/hr
+	~		|
+
+beta accesibilidad i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','Eleccion', 'B13')
+	~	Dmnl
+	~		|
+
+viajes por modo ij[i,j,MODO]=
+	viajes ij balanceados[i,j]*particion modal ij[i,j,MODO]/100
+	~	viaj
+	~		|
+
+matrix 14[i,j]=
+	IF THEN ELSE(SUM(matrix 13[i!,j])=0,
+	0,
+	matrix 13[i,j]*atraccion j[j]/SUM(matrix 13[i!,j])
+	)
+	~	viaj
+	~		|
+
+matrix 15[i,j]=
+	IF THEN ELSE(SUM(matrix 14[i,j!])=0,
+	0,
+	matrix 14[i,j]*generacion i[i]/SUM(matrix 14[i,j!])
+	)
+	~	viaj
+	~		|
+
+check i[i]=
+	IF THEN ELSE(SUM(viajes ij balanceados[i,j!])=0,
+	0,
+	generacion i[i]/SUM(viajes ij balanceados[i,j!])
+	)
+	~	Dmnl
+	~		|
+
+check j[j]=
+	IF THEN ELSE(SUM(viajes ij balanceados[i!,j])=0,
+	0,
+	atraccion j[j]/SUM(viajes ij balanceados[i!,j])
+	)
+	~	Dmnl
+	~		|
+
+matrix 10[i,j]=
+	IF THEN ELSE(SUM(matrix 9[i!,j])=0,
+	0,
+	matrix 9[i,j]*atraccion j[j]/SUM(matrix 9[i!,j])
+	)
+	~	viaj
+	~		|
+
+matrix 11[i,j]=
+	IF THEN ELSE(SUM(matrix 10[i,j!])=0,
+	0,
+	matrix 10[i,j]*generacion i[i]/SUM(matrix 10[i,j!])
+	)
+	~	viaj
+	~		|
+
+matrix 12[i,j]=
+	IF THEN ELSE(SUM(matrix 11[i!,j])=0,
+	0,
+	matrix 11[i,j]*atraccion j[j]/SUM(matrix 11[i!,j])
+	)
+	~	viaj
+	~		|
+
+matrix 13[i,j]=
+	IF THEN ELSE(SUM(matrix 12[i,j!])=0,
+	0,
+	matrix 12[i,j]*generacion i[i]/SUM(matrix 12[i,j!])
+	)
+	~	viaj
+	~		|
+
+atraccion j balanceada[j]=
+	SUM(viajes ij balanceados[i!,j])
+	~	viaj
+	~		|
+
+matrix 19[i,j]=
+	IF THEN ELSE(SUM(matrix 18[i,j!])=0,
+	0,
+	matrix 18[i,j]*generacion i[i]/SUM(matrix 18[i,j!])
+	)
+	~	viaj
+	~		|
+
+matrix 16[i,j]=
+	IF THEN ELSE(SUM(matrix 15[i!,j])=0,
+	0,
+	matrix 15[i,j]*atraccion j[j]/SUM(matrix 15[i!,j])
+	)
+	~	viaj
+	~		|
+
+matrix 17[i,j]=
+	IF THEN ELSE(SUM(matrix 16[i,j!])=0,
+	0,
+	matrix 16[i,j]*generacion i[i]/SUM(matrix 16[i,j!])
+	)
+	~	viaj
+	~		|
+
+matrix 18[i,j]=
+	IF THEN ELSE(SUM(matrix 17[i!,j])=0,
+	0,
+	matrix 17[i,j]*atraccion j[j]/SUM(matrix 17[i!,j])
+	)
+	~	viaj
+	~		|
+
+matrix 8[i,j]=
+	IF THEN ELSE(SUM(matrix 7[i!,j])=0, 
+	0,
+	matrix 7[i,j]*atraccion j[j]/SUM(matrix 7[i!,j])
+	)
+	~	viaj
+	~		|
+
+matrix 9[i,j]=
+	IF THEN ELSE(SUM(matrix 8[i,j!])=0,
+	0,
+	matrix 8[i,j]*generacion i[i]/SUM(matrix 8[i,j!])
+	)
+	~	viaj
+	~		|
+
+viajes ij balanceados[i,j]=
+	IF THEN ELSE(SUM(matrix 19[i!,j])=0,
+	0,
+	matrix 19[i,j]*atraccion j[j]/SUM(matrix 19[i!,j])
+	)
+	~	viaj
+	~		|
+
+matrix 7[i,j]=
+	IF THEN ELSE(SUM(matrix 6[i,j!])=0,
+	0,
+	matrix 6[i,j]*generacion i[i]/SUM(matrix 6[i,j!])
+	)
+	~	viaj
+	~		|
+
+generacion i balanceada[i]=
+	SUM(viajes ij balanceados[i,j!])
+	~	viaj
+	~		|
+
+matrix 5[i,j]=
+	IF THEN ELSE(SUM(matrix 4[i,j!])=0,
+	0,
+	matrix 4[i,j]*generacion i[i]/SUM(matrix 4[i,j!])
+	)
+	~	viaj
+	~		|
+
+matrix 6[i,j]=
+	IF THEN ELSE(SUM(matrix 5[i!,j])=0,
+	0,
+	matrix 5[i,j]*atraccion j[j]/SUM(matrix 5[i!,j])
+	)
+	~	viaj
+	~		|
+
+viajes ij t0[i,j]=
+	GET DIRECT CONSTANTS('Input.xlsx','MxOB', 'B2')
+	~	viaj
+	~		|
+
+matrix 1[i,j]=
+	IF THEN ELSE(SUM(viajes ij t0[i,j!])=0, 
+	0, 
+	viajes ij t0[i,j]*generacion i[i]/SUM(viajes ij t0[i,j!])
+	)
+	~	viaj
+	~		|
+
+matrix 2[i,j]=
+	IF THEN ELSE(SUM(matrix 1[i!,j])=0, 
+	0, 
+	matrix 1[i,j]*atraccion j[j]/SUM(matrix 1[i!,j])
+	)
+	~	viaj
+	~		|
+
+atraccion total=
+	SUM(atraccion j sin ajustar[j!])
+	~	viaj
+	~		|
+
+generacion total=
+	SUM(generacion i[i!])
+	~	viaj
+	~		|
+
+matrix 4[i,j]=
+	IF THEN ELSE(SUM(matrix 3[i!,j])=0,
+	0, 
+	matrix 3[i,j]*atraccion j[j]/SUM(matrix 3[i!,j]) 
+	)
+	~	viaj
+	~		|
+
+matrix 3[i,j]=
+	IF THEN ELSE(SUM(matrix 2[i,j!])=0,
+	0,
+	matrix 2[i,j]*generacion i[i]/SUM(matrix 2[i,j!])
+	)
+	~	viaj
+	~		|
+
+atraccion j[j]=
+	atraccion j sin ajustar[j]*factor ajuste atraccion
+	~	viaj
+	~		|
+
+habitantes por hogar i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','Gen', 'B2')
+	~	Dmnl
+	~		|
+
+proporcion hogares con auto i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','Gen', 'B4')
+	~	porc
+	~		|
+
+proporcion hogares con moto i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','Gen', 'B5')
+	~	porc
+	~		|
+
+aux pm[i,j]=
+	(
+	(disponibilidad ij por modo[i,j,MOTO]/100)*(EXP(utilidad ij por modo[i,j,MOTO]))+
+	(disponibilidad ij por modo[i,j,AUTO]/100)*(EXP(utilidad ij por modo[i,j,AUTO]))+
+	(disponibilidad ij por modo[i,j,TM]  /100)*(EXP(utilidad ij por modo[i,j,TM]))+
+	(disponibilidad ij por modo[i,j,BUS] /100)*(EXP(utilidad ij por modo[i,j,BUS]))+
+	(disponibilidad ij por modo[i,j,METRO]/100)*(EXP(utilidad ij por modo[i,j,METRO]))+
+	(disponibilidad ij por modo[i,j,TREN]/100)*(EXP(utilidad ij por modo[i,j,TREN]))+
+	(disponibilidad ij por modo[i,j,BICI]/100)*(EXP(utilidad ij por modo[i,j,BICI]))+
+	(disponibilidad ij por modo[i,j,PIE] /100)*(EXP(utilidad ij por modo[i,j,PIE]))
+	)
+	~	Dmnl
+	~		|
+
+disponibilidad ij por modo[i,j,MOTO]=
+	GET DIRECT CONSTANTS('Input.xlsx','MOTO_A', 'B2') ~~|
+disponibilidad ij por modo[i,j,AUTO]=
+	GET DIRECT CONSTANTS('Input.xlsx','AUTO_A', 'B2') ~~|
+disponibilidad ij por modo[i,j,TM]=
+	GET DIRECT CONSTANTS('Input.xlsx','TM_A', 'B2') ~~|
+disponibilidad ij por modo[i,j,BUS]=
+	GET DIRECT CONSTANTS('Input.xlsx','BUS_A', 'B2') ~~|
+disponibilidad ij por modo[i,j,METRO]=
+	GET DIRECT CONSTANTS('Input.xlsx','METRO_A', 'B2') ~~|
+disponibilidad ij por modo[i,j,TREN]=
+	GET DIRECT CONSTANTS('Input.xlsx','TREN_A', 'B2') ~~|
+disponibilidad ij por modo[i,j,BICI]=
+	GET DIRECT CONSTANTS('Input.xlsx','BICI_A', 'B2') ~~|
+disponibilidad ij por modo[i,j,PIE]=
+	GET DIRECT CONSTANTS('Input.xlsx','CAMINATA_A', 'B2')
+	~	porc
+	~		|
+
+particion modal ij[i,j,MOTO]=
+	100*(disponibilidad ij por modo[i,j,MOTO]/100)*(EXP(utilidad ij por modo[i,j,MOTO]))\
+		/aux pm[i,j] ~~|
+particion modal ij[i,j,AUTO]=
+	100*(disponibilidad ij por modo[i,j,AUTO]/100)*(EXP(utilidad ij por modo[i,j,AUTO]))\
+		/aux pm[i,j] ~~|
+particion modal ij[i,j,TM]=
+	100*(disponibilidad ij por modo[i,j,TM]/100)*(EXP(utilidad ij por modo[i,j,TM]))/aux pm\
+		[i,j] ~~|
+particion modal ij[i,j,BUS]=
+	100*(disponibilidad ij por modo[i,j,BUS]/100)*(EXP(utilidad ij por modo[i,j,BUS]))/aux pm\
+		[i,j] ~~|
+particion modal ij[i,j,METRO]=
+	100*(disponibilidad ij por modo[i,j,METRO]/100)*(EXP(utilidad ij por modo[i,j,METRO]\
+		))/aux pm[i,j] ~~|
+particion modal ij[i,j,TREN]=
+	100*(disponibilidad ij por modo[i,j,TREN]/100)*(EXP(utilidad ij por modo[i,j,TREN]))\
+		/aux pm[i,j] ~~|
+particion modal ij[i,j,BICI]=
+	100*(disponibilidad ij por modo[i,j,BICI]/100)*(EXP(utilidad ij por modo[i,j,BICI]))\
+		/aux pm[i,j] ~~|
+particion modal ij[i,j,PIE]=
+	100*(disponibilidad ij por modo[i,j,PIE]/100)*(EXP(utilidad ij por modo[i,j,PIE]))/aux pm\
+		[i,j]
+	~	porc
+	~		|
+
+proporcion hogares grandes i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','Eleccion', 'B12')
+	~	porc
+	~		|
+
+prop pers no ocupadas i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','Eleccion', 'B5')
+	~	porc
+	~		|
+
+proporcion mujeres i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','Eleccion', 'B9')
+	~	porc
+	~		|
+
+costo de viaje ij por modo[i,j,MOTO]=
+	GET DIRECT CONSTANTS('Input.xlsx','MOTO_C', 'B2') ~~|
+costo de viaje ij por modo[i,j,AUTO]=
+	GET DIRECT CONSTANTS('Input.xlsx','AUTO_C', 'B2') ~~|
+costo de viaje ij por modo[i,j,TM]=
+	GET DIRECT CONSTANTS('Input.xlsx','TM_C', 'B2') ~~|
+costo de viaje ij por modo[i,j,BUS]=
+	GET DIRECT CONSTANTS('Input.xlsx','BUS_C', 'B2') ~~|
+costo de viaje ij por modo[i,j,METRO]=
+	GET DIRECT CONSTANTS('Input.xlsx','METRO_C', 'B2') ~~|
+costo de viaje ij por modo[i,j,TREN]=
+	GET DIRECT CONSTANTS('Input.xlsx','TREN_C', 'B2') ~~|
+costo de viaje ij por modo[i,j,BICI]=
+	GET DIRECT CONSTANTS('Input.xlsx','BICI_C', 'B2') ~~|
+costo de viaje ij por modo[i,j,PIE]=
+	GET DIRECT CONSTANTS('Input.xlsx','CAMINATA_C', 'B2')
+	~	miles de pesos
+	~		|
+
+tiempo de viaje ij por modo[i,j,MOTO]=
+	60*distancia viaje ij[i,j]/("velocidad ij t-1"[i,j]*fvel moto) ~~|
+tiempo de viaje ij por modo[i,j,AUTO]=
+	60*distancia viaje ij[i,j]/"velocidad ij t-1"[i,j] ~~|
+tiempo de viaje ij por modo[i,j,TM]=
+	60*(distancia viaje ij[i,j]*1.08)/"velocidad ij t-1"[i,j] ~~|
+tiempo de viaje ij por modo[i,j,BUS]=
+	60*(distancia viaje ij[i,j]*1.08)/("velocidad ij t-1"[i,j]*fvel bus ij[i,j]) ~~|
+tiempo de viaje ij por modo[i,j,METRO]=
+	60*(distancia viaje ij[i,j]*1.08)/("velocidad ij t-1"[i,j]*fvel metro) ~~|
+tiempo de viaje ij por modo[i,j,TREN]=
+	60*(distancia viaje ij[i,j]*1.08)/("velocidad ij t-1"[i,j]*fvel metro) ~~|
+tiempo de viaje ij por modo[i,j,BICI]=
+	60*(distancia viaje ij[i,j]*0.82)/10.4 ~~|
+tiempo de viaje ij por modo[i,j,PIE]=
+	60*(distancia viaje ij[i,j]*0.82)/5.8
+	~	min
+	~		|
+
+MODO:
+	MOTO,AUTO,TM,BUS,METRO,TREN,BICI,PIE
+	~	
+	~		|
+
+ac i t0[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','A1-betas_modelo', 'B6')
+	~	m2
+	~		|
+
+ac reubicada i[i]=
+	SUM(ac a repartir en vecinos ij[i!,i])
+	~	m2
+	~		|
+
+dvias i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','A2-variables_llenado', 'B2' )
+	~	{ln(m)}
+	~		|
+
+b1 i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx', 'A1-betas_modelo', 'B7' )
+	~	Dmnl
+	~		|
+
+b2 i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','A1-betas_modelo', 'B8' )
+	~	Dmnl
+	~		|
+
+b3 i[i]=
+	GET DIRECT CONSTANTS('Input.xlsx','A1-betas_modelo', 'B9')
+	~	Dmnl
+	~		|
+
+probabilidades por uso i[i,RESIDENCIAL]=
+	utilidad por uso i[i,RESIDENCIAL] / SUM(utilidad por uso i[i,USO!]) ~~|
+probabilidades por uso i[i, COMERCIAL]=
+	utilidad por uso i[i,COMERCIAL] / SUM(utilidad por uso i[i,USO!]) ~~|
+probabilidades por uso i[i, INDUSTRIAL]=
+	utilidad por uso i[i,INDUSTRIAL] / SUM(utilidad por uso i[i,USO!]) ~~|
+probabilidades por uso i[i, DOTACIONAL]=
+	utilidad por uso i[i,DOTACIONAL] / SUM(utilidad por uso i[i,USO!]) ~~|
+probabilidades por uso i[i, RURAL]=
+	utilidad por uso i[i,RURAL] / SUM(utilidad por uso i[i,USO!])
+	~	porc
+	~		|
+
+proporcion ac nueva i[i]=
+	IF THEN ELSE( Time=2017 , 0 , (ac nueva i[i]/SUM(ac nueva i[i!])*100) )
+	~	porc
+	~		|
+
+INGRESO:
+	IB, IM, IA
+	~	
+	~		|
+
+USO:
+	RESIDENCIAL, COMERCIAL, INDUSTRIAL, DOTACIONAL, RURAL
+	~	
+	~		|
+
+i:
+	a1,
+	a2,
+	a3,
+	a4,
+	a5,
+	a6,
+	a7,
+	a8,
+	a9,
+	a10,
+	a11,
+	a12,
+	a13,
+	a14,
+	a15,
+	a16,
+	a17,
+	a18,
+	a19,
+	a20,
+	a21,
+	a22,
+	a23,
+	a24,
+	a25,
+	a26,
+	a27,
+	a28,
+	a29,
+	a30,
+	a31,
+	a32,
+	a33,
+	a34,
+	a35,
+	a36,
+	a37,
+	a38,
+	a39,
+	a40,
+	a41,
+	a42,
+	a43,
+	a44,
+	a45,
+	a46,
+	a47,
+	a48,
+	a49,
+	a50,
+	a51,
+	a52,
+	a53,
+	a54,
+	a55,
+	a56,
+	a57,
+	a58,
+	a59,
+	a60,
+	a61,
+	a62,
+	a63,
+	a64,
+	a65,
+	a66,
+	a67,
+	a68,
+	a69,
+	a70,
+	a71,
+	a72,
+	a73,
+	a74,
+	a75,
+	a76,
+	a77,
+	a78,
+	a79,
+	a80,
+	a81,
+	a82,
+	a83,
+	a84,
+	a85,
+	a86,
+	a87,
+	a88,
+	a89,
+	a90,
+	a91,
+	a92,
+	a93,
+	a94,
+	a95,
+	a96,
+	a97,
+	a98,
+	a99,
+	a100,
+	a101,
+	a102,
+	a103,
+	a104,
+	a105,
+	a106,
+	a107,
+	a108,
+	a109,
+	a110,
+	a111,
+	a112,
+	a113,
+	a114,
+	a115,
+	a116,
+	a117,
+	a118,
+	a119,
+	a120,
+	a121,
+	a122,
+	a123,
+	a124,
+	a125,
+	a126,
+	a127,
+	a128,
+	a129,
+	a130,
+	a131,
+	a132,
+	a133,
+	a134,
+	a135,
+	a136,
+	a137,
+	a138,
+	a139,
+	a140,
+	a141,
+	a142,
+	a143,
+	a144,
+	a145,
+	a146,
+	a147,
+	a148
+	~	
+	~		|
+
+j:
+	a1,
+	a2,
+	a3,
+	a4,
+	a5,
+	a6,
+	a7,
+	a8,
+	a9,
+	a10,
+	a11,
+	a12,
+	a13,
+	a14,
+	a15,
+	a16,
+	a17,
+	a18,
+	a19,
+	a20,
+	a21,
+	a22,
+	a23,
+	a24,
+	a25,
+	a26,
+	a27,
+	a28,
+	a29,
+	a30,
+	a31,
+	a32,
+	a33,
+	a34,
+	a35,
+	a36,
+	a37,
+	a38,
+	a39,
+	a40,
+	a41,
+	a42,
+	a43,
+	a44,
+	a45,
+	a46,
+	a47,
+	a48,
+	a49,
+	a50,
+	a51,
+	a52,
+	a53,
+	a54,
+	a55,
+	a56,
+	a57,
+	a58,
+	a59,
+	a60,
+	a61,
+	a62,
+	a63,
+	a64,
+	a65,
+	a66,
+	a67,
+	a68,
+	a69,
+	a70,
+	a71,
+	a72,
+	a73,
+	a74,
+	a75,
+	a76,
+	a77,
+	a78,
+	a79,
+	a80,
+	a81,
+	a82,
+	a83,
+	a84,
+	a85,
+	a86,
+	a87,
+	a88,
+	a89,
+	a90,
+	a91,
+	a92,
+	a93,
+	a94,
+	a95,
+	a96,
+	a97,
+	a98,
+	a99,
+	a100,
+	a101,
+	a102,
+	a103,
+	a104,
+	a105,
+	a106,
+	a107,
+	a108,
+	a109,
+	a110,
+	a111,
+	a112,
+	a113,
+	a114,
+	a115,
+	a116,
+	a117,
+	a118,
+	a119,
+	a120,
+	a121,
+	a122,
+	a123,
+	a124,
+	a125,
+	a126,
+	a127,
+	a128,
+	a129,
+	a130,
+	a131,
+	a132,
+	a133,
+	a134,
+	a135,
+	a136,
+	a137,
+	a138,
+	a139,
+	a140,
+	a141,
+	a142,
+	a143,
+	a144,
+	a145,
+	a146,
+	a147,
+	a148
+	~	
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 2050
+	~	Year
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 2017
+	~	Year
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Year [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	Year [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,110,0
+10,1,Time,583,-1310,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,2,Time,1182,-1301,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,3,Time,970,-1303,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+12,4,0,1409,-1597,136,11,8,131,0,0,-1,0,0,0
+10,5,AUX PART r i,690,-1038,48,11,8,3,0,0,0,0,0,0
+10,6,hogares i,833,-1234,34,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,7,b1 i,-706,-874,14,11,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||255-0-0
+10,8,b2 i,-705,-826,14,11,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||255-0-0
+10,9,b3 i,-703,-770,14,11,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||255-0-0
+10,10,ac i t0,-592,-670,24,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,11,ac e1 i,-199,-916,26,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,12,10,11,0,0,0,0,0,64,0,-1--1--1,,1|(-402,-790)|
+10,13,ac sobrante e1 i,-518,-916,59,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,14,10,13,0,0,0,0,0,64,0,-1--1--1,,1|(-557,-787)|
+1,15,11,13,0,0,0,0,0,64,0,-1--1--1,,1|(-335,-916)|
+10,16,ac a repartir en vecinos ij,-517,-996,57,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,17,13,16,0,0,0,0,0,64,0,-1--1--1,,1|(-517,-944)|
+10,18,ac reubicada i,-97,-996,52,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,19,16,18,0,0,0,0,0,64,0,-1--1--1,,1|(-312,-996)|
+10,20,ac e2 i,-190,-819,22,11,8,3,0,0,0,0,0,0
+1,21,10,20,0,0,0,0,0,64,0,-1--1--1,,1|(-397,-743)|
+1,22,18,20,1,0,0,0,0,64,0,-1--1--1,,1|(-162,-866)|
+10,23,ac nueva i,156,-875,39,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,24,Time,5,-876,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,25,24,23,0,0,0,0,0,64,0,-1--1--1,,1|(67,-876)|
+10,26,proporcion ac nueva i,307,-875,53,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,27,23,26,0,0,0,0,0,64,0,-1--1--1,,1|(217,-875)|
+10,28,Time,307,-784,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,29,28,26,0,0,0,0,0,64,0,-1--1--1,,1|(307,-818)|
+10,30,Time,137,-747,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,31,Time,115,-754,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,32,dvias i,618,-799,25,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,33,utilidad por uso i,496,-732,43,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,34,32,33,0,0,0,0,0,64,0,-1--1--1,,1|(571,-774)|
+10,35,probabilidades por uso i,463,-854,55,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,36,33,35,1,0,0,0,0,64,0,-1--1--1,,1|(481,-787)|
+10,37,ac nueva por uso i,156,-997,49,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,38,23,37,1,0,0,0,0,64,0,-1--1--1,,1|(155,-930)|
+10,39,Time,1847,-2201,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,40,area sin construir i,-95,-504,39,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,41,10,40,0,0,0,0,0,64,0,-1--1--1,,1|(-358,-593)|
+10,42,costo de viaje ij por modo,-385,366,50,19,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||255-0-0
+10,43,tiempo de viaje ij por modo,-383,438,66,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,44,proporcion mujeres i,-383,490,42,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,45,prop pers no ocupadas i,-377,545,48,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,46,proporcion hogares grandes i,-382,613,66,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,47,utilidad ij por modo,-41,498,42,19,8,3,0,0,0,0,0,0
+1,48,42,47,0,0,0,0,0,64,0,-1--1--1,,1|(-217,430)|
+1,49,43,47,0,0,0,0,0,64,0,-1--1--1,,1|(-207,468)|
+1,50,45,47,0,0,0,0,0,64,0,-1--1--1,,1|(-213,522)|
+1,51,44,47,0,0,0,0,0,64,0,-1--1--1,,1|(-219,493)|
+10,52,disponibilidad ij por modo,-46,633,59,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,53,particion modal ij,202,498,33,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,54,52,53,0,0,0,0,0,64,0,-1--1--1,,1|(73,567)|
+1,55,47,53,0,0,0,0,0,64,0,-1--1--1,,1|(78,498)|
+10,56,aux pm,200,633,29,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,57,52,56,0,0,0,0,0,64,0,-1--1--1,,1|(85,633)|
+1,58,47,56,0,0,0,0,0,64,0,-1--1--1,,1|(79,566)|
+1,59,56,53,0,0,0,0,0,64,0,-1--1--1,,1|(200,576)|
+10,60,habitantes por hogar i,-689,-110,54,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,61,proporcion hogares con auto i,-689,68,69,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,62,proporcion hogares con moto i,-687,6,73,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,63,generacion por hogar i,-481,-55,48,19,8,3,0,0,0,0,0,0
+1,64,60,63,0,0,0,0,0,64,0,-1--1--1,,1|(-588,-84)|
+1,65,62,63,0,0,0,0,0,64,0,-1--1--1,,1|(-581,-26)|
+10,66,hogares i,-282,-161,38,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,67,generacion i,-281,-54,45,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,68,63,67,0,0,0,0,0,64,0,-1--1--1,,1|(-387,-55)|
+1,69,66,67,0,0,0,0,0,128,0,-1--1--1,,1|(-282,-115)|
+10,70,atraccion j,688,-54,40,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,71,generacion total,-478,28,50,11,8,3,0,0,0,0,0,0
+1,72,67,71,0,0,0,0,0,64,0,-1--1--1,,1|(-374,-16)|
+10,73,atraccion total,854,-250,53,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,74,viajes ij t0,182,-394,39,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,75,matrix 1,182,-293,38,11,8,3,0,0,0,0,0,0
+1,76,67,75,0,0,0,0,0,64,0,-1--1--1,,1|(-57,-171)|
+1,77,74,75,0,0,0,0,0,64,0,-1--1--1,,1|(182,-351)|
+10,78,matrix 2,310,-227,38,11,8,3,0,0,0,0,0,0
+1,79,70,78,0,0,0,0,0,64,0,-1--1--1,,1|(505,-138)|
+1,80,75,78,0,0,0,0,0,64,0,-1--1--1,,1|(239,-264)|
+10,81,matrix 3,77,-195,38,11,8,3,0,0,0,0,0,0
+1,82,67,81,0,0,0,0,0,64,0,-1--1--1,,1|(-110,-122)|
+1,83,78,81,0,0,0,0,0,64,0,-1--1--1,,1|(200,-213)|
+10,84,matrix 4,316,-179,38,11,8,3,0,0,0,0,0,0
+1,85,70,84,0,0,0,0,0,64,0,-1--1--1,,1|(508,-115)|
+1,86,81,84,0,0,0,0,0,64,0,-1--1--1,,1|(189,-188)|
+10,87,matrix 5,75,-151,38,11,8,3,0,0,0,0,0,0
+1,88,67,87,0,0,0,0,0,64,0,-1--1--1,,1|(-109,-102)|
+1,89,84,87,0,0,0,0,0,64,0,-1--1--1,,1|(202,-167)|
+10,90,matrix 6,314,-134,38,11,8,3,0,0,0,0,0,0
+1,91,70,90,0,0,0,0,0,64,0,-1--1--1,,1|(506,-93)|
+1,92,87,90,0,0,0,0,0,64,0,-1--1--1,,1|(187,-144)|
+10,93,matrix 7,75,-101,38,11,8,3,0,0,0,0,0,0
+1,94,67,93,0,0,0,0,0,64,0,-1--1--1,,1|(-107,-77)|
+1,95,90,93,0,0,0,0,0,64,0,-1--1--1,,1|(201,-119)|
+10,96,matrix 8,315,-84,37,11,8,3,0,0,0,0,0,0
+1,97,70,96,0,0,0,0,0,64,0,-1--1--1,,1|(506,-69)|
+1,98,93,96,0,0,0,0,0,64,0,-1--1--1,,1|(188,-94)|
+10,99,matrix 9,75,-55,38,11,8,3,0,0,0,0,0,0
+1,100,67,99,0,0,0,0,0,64,0,-1--1--1,,1|(-107,-55)|
+1,101,96,99,0,0,0,0,0,64,0,-1--1--1,,1|(202,-71)|
+10,102,matrix 10,317,-36,42,11,8,3,0,0,0,0,0,0
+1,103,70,102,0,0,0,0,0,64,0,-1--1--1,,1|(510,-47)|
+1,104,99,102,0,0,0,0,0,64,0,-1--1--1,,1|(187,-48)|
+10,105,matrix 11,74,-7,42,11,8,3,0,0,0,0,0,0
+1,106,102,105,0,0,0,0,0,64,0,-1--1--1,,1|(202,-23)|
+10,107,matrix 12,317,10,41,11,8,3,0,0,0,0,0,0
+1,108,70,107,0,0,0,0,0,64,0,-1--1--1,,1|(509,-25)|
+1,109,105,107,0,0,0,0,0,64,0,-1--1--1,,1|(189,0)|
+10,110,matrix 13,76,37,42,11,8,3,0,0,0,0,0,0
+1,111,67,110,0,0,0,0,0,64,0,-1--1--1,,1|(-109,-11)|
+1,112,107,110,0,0,0,0,0,64,0,-1--1--1,,1|(203,22)|
+10,113,matrix 14,316,58,42,11,8,3,0,0,0,0,0,0
+1,114,70,113,0,0,0,0,0,64,0,-1--1--1,,1|(508,-1)|
+1,115,110,113,0,0,0,0,0,64,0,-1--1--1,,1|(189,46)|
+10,116,matrix 15,73,86,42,11,8,3,0,0,0,0,0,0
+1,117,67,116,0,0,0,0,0,64,0,-1--1--1,,1|(-112,13)|
+1,118,113,116,0,0,0,0,0,64,0,-1--1--1,,1|(201,70)|
+10,119,matrix 16,319,101,42,11,8,3,0,0,0,0,0,0
+1,120,70,119,0,0,0,0,0,64,0,-1--1--1,,1|(509,20)|
+1,121,116,119,0,0,0,0,0,64,0,-1--1--1,,1|(189,92)|
+10,122,matrix 17,76,132,42,11,8,3,0,0,0,0,0,0
+1,123,67,122,0,0,0,0,0,64,0,-1--1--1,,1|(-110,35)|
+1,124,119,122,0,0,0,0,0,64,0,-1--1--1,,1|(204,115)|
+1,125,67,105,0,0,0,0,0,64,0,-1--1--1,,1|(-109,-32)|
+10,126,matrix 18,318,150,42,11,8,3,0,0,0,0,0,0
+1,127,70,126,0,0,0,0,0,64,0,-1--1--1,,1|(509,44)|
+1,128,122,126,0,0,0,0,0,64,0,-1--1--1,,1|(190,140)|
+10,129,matrix 19,76,177,42,11,8,3,0,0,0,0,0,0
+1,130,67,129,0,0,0,0,0,64,0,-1--1--1,,1|(-109,57)|
+1,131,126,129,0,0,0,0,0,64,0,-1--1--1,,1|(203,162)|
+10,132,viajes ij balanceados,310,196,40,19,8,3,0,0,0,0,0,0
+1,133,70,132,0,0,0,0,0,64,0,-1--1--1,,1|(510,63)|
+1,134,129,132,0,0,0,0,0,64,0,-1--1--1,,1|(187,185)|
+10,135,check i,-94,196,28,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,136,67,135,1,0,0,0,0,64,0,-1--1--1,,1|(-228,74)|
+1,137,132,135,1,0,0,0,0,64,0,-1--1--1,,1|(109,196)|
+10,138,check j,560,196,28,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,139,70,138,1,0,0,0,0,64,0,-1--1--1,,1|(650,86)|
+1,140,132,138,1,0,0,0,0,64,0,-1--1--1,,1|(434,196)|
+10,141,generacion i balanceada,171,296,46,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,142,132,141,0,0,0,0,0,64,0,-1--1--1,,1|(246,241)|
+10,143,atraccion j balanceada,312,301,42,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,144,132,143,0,0,0,0,0,64,0,-1--1--1,,1|(310,241)|
+10,145,viajes por modo ij,525,369,37,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,146,132,145,0,0,0,0,0,64,0,-1--1--1,,1|(411,277)|
+1,147,53,145,0,0,0,0,0,64,0,-1--1--1,,1|(355,436)|
+10,148,tiempo generalizado ij,-42,734,55,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,149,56,148,0,0,0,0,0,64,0,-1--1--1,,1|(95,676)|
+10,150,beta accesibilidad i,959,734,59,11,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||255-0-0
+10,151,accesibilidad ij,762,734,54,11,8,131,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,152,150,151,0,0,0,0,0,64,0,-1--1--1,,1|(865,734)|
+1,153,148,151,0,0,0,0,0,64,0,-1--1--1,,1|(353,734)|
+10,154,vel flujo libre ij,1615,504,57,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,155,velocidad ij t0,1695,670,53,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,156,betas ij ASIG,1772,508,51,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,157,intercept ij ASIG,1912,504,54,11,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||255-0-0
+10,158,factor demanda ij t0,1696,589,59,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,159,156,158,0,0,0,0,0,64,0,-1--1--1,,1|(1742,538)|
+1,160,155,158,0,0,0,0,0,64,0,-1--1--1,,1|(1695,641)|
+1,161,154,158,0,0,0,0,0,64,0,-1--1--1,,1|(1645,536)|
+10,162,"viajes carro ij t-1",931,370,52,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,163,145,162,0,0,0,0,0,64,0,-1--1--1,,1|(713,369)|
+10,164,"viajes carro i t-1",932,249,49,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,165,"viajes carro j t-1",931,561,49,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,166,162,164,0,0,0,0,0,64,0,-1--1--1,,1|(931,316)|
+1,167,162,165,0,0,0,0,0,64,0,-1--1--1,,1|(931,458)|
+10,168,viajes por modo ij t0,1415,373,52,19,8,3,0,0,0,0,0,0
+1,169,145,168,0,0,0,0,0,64,1,-1--1--1,,1|(955,370)|
+10,170,viajes carro i t0,1414,249,58,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,171,168,170,0,0,0,0,0,64,0,-1--1--1,,1|(1414,313)|
+10,172,viajes carro j t0,1416,561,58,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,173,168,172,0,0,0,0,0,64,0,-1--1--1,,1|(1415,464)|
+10,174,capacidad via,1307,505,51,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||0-128-0
+10,175,factor demanda i,1178,249,40,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,176,164,175,0,0,0,0,0,64,0,-1--1--1,,1|(1052,249)|
+1,177,170,175,0,0,0,0,0,64,0,-1--1--1,,1|(1294,249)|
+10,178,factor demanda j,1179,561,40,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,179,165,178,0,0,0,0,0,64,0,-1--1--1,,1|(1052,561)|
+1,180,172,178,0,0,0,0,0,64,0,-1--1--1,,1|(1295,561)|
+10,181,distancia viaje ij,1058,507,60,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,182,factor demanda ij,1179,400,42,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,183,174,182,0,0,0,0,0,64,0,-1--1--1,,1|(1253,461)|
+1,184,181,182,0,0,0,0,0,64,0,-1--1--1,,1|(1107,462)|
+1,185,175,182,0,0,0,0,0,64,0,-1--1--1,,1|(1178,317)|
+1,186,178,182,0,0,0,0,0,64,0,-1--1--1,,1|(1179,487)|
+10,187,velocidad ij,1696,401,43,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,188,156,187,0,0,0,0,0,64,0,-1--1--1,,1|(1738,460)|
+1,189,182,187,0,0,0,0,0,64,0,-1--1--1,,1|(1430,400)|
+1,190,158,187,0,0,0,0,0,64,0,-1--1--1,,1|(1696,497)|
+10,191,Time,1694,324,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,192,191,187,0,0,0,0,0,64,0,-1--1--1,,1|(1694,355)|
+1,193,154,187,0,0,0,0,0,64,0,-1--1--1,,1|(1650,457)|
+10,194,ac por uso i,692,-906,46,17,3,131,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,195,37,194,1,0,0,0,0,64,0,-1--1--1,,1|(418,-952)|
+1,196,194,5,1,0,0,0,0,64,0,-1--1--1,,1|(690,-971)|
+10,197,distancia viaje ij,-573,299,39,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,198,197,43,0,0,0,0,0,128,0,-1--1--1,,1|(-484,364)|
+10,199,fvel moto,-587,434,37,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||0-128-0
+10,200,fvel bus ij,-587,476,38,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+1,201,199,43,0,0,0,0,0,64,0,-1--1--1,,1|(-506,434)|
+1,202,200,43,0,0,0,0,0,64,0,-1--1--1,,1|(-505,460)|
+10,203,fvel metro,-586,521,39,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||0-128-0
+1,204,203,43,0,0,0,0,0,64,0,-1--1--1,,1|(-502,486)|
+10,205,"velocidad ij t-1",1899,401,56,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,206,187,205,0,0,0,0,0,64,0,-1--1--1,,1|(1784,401)|
+1,207,155,205,0,0,0,0,0,64,1,-1--1--1,,1|(1792,541)|
+10,208,"velocidad ij t-1",-569,364,49,20,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,209,208,43,1,0,0,0,0,128,0,-1--1--1,,1|(-467,415)|
+12,210,0,500,-1139,59,26,8,7,0,24,-1,0,0,0,-1--1--1,0-0-0,|18|B|0-0-0
+Modelo residencial
+12,211,0,-665,-585,82,32,8,7,0,24,-1,0,0,0,-1--1--1,0-0-0,|22|B|0-0-0
+Modelo de construcción
+12,212,0,556,-577,91,30,8,7,0,24,-1,0,0,0,-1--1--1,0-0-0,|20|B|0-0-0
+Modelo de usos de suelo
+12,213,0,962,-182,100,26,8,7,0,24,-1,0,0,0,-1--1--1,0-0-0,|18|B|0-0-0
+Modelo de atracción de viajes
+12,214,0,-465,-175,115,30,8,135,0,24,-1,0,0,0,-1--1--1,0-0-0,|18|B|0-0-0
+Modelo de generación de viajes
+12,215,0,573,-177,96,26,8,7,0,24,-1,0,0,0,-1--1--1,0-0-0,|18|B|0-0-0
+Modelo de distribución zonal
+12,216,0,-5,418,80,26,8,7,0,24,-1,0,0,0,-1--1--1,0-0-0,|18|B|0-0-0
+Modelo de elección modal
+12,217,0,1319,626,98,26,8,7,0,24,-1,0,0,0,-1--1--1,0-0-0,|18|B|0-0-0
+Modelo de pseudo-asignación
+12,218,0,604,785,70,26,8,7,0,24,-1,0,0,0,-1--1--1,0-0-0,|18|B|0-0-0
+Modelo de accesibilidad
+10,219,matriz transpuesta de contiguidad ji,-746,-996,69,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+1,220,219,16,0,0,0,0,0,64,0,-1--1--1,,1|(-632,-996)|
+10,221,Time,2294,-2146,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,222,Time,2228,-2109,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,223,Time,2297,-2116,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,224,Time,2241,-2076,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,225,ac sobrante e2 i,-95,-610,59,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,226,10,225,0,0,0,0,0,64,0,-1--1--1,,1|(-368,-644)|
+10,227,Time,2048,-2106,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,228,proporcion hogares nuevos r i,367,-1035,69,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,229,5,228,1,0,0,0,0,64,0,-1--1--1,,1|(545,-1036)|
+10,230,coorx i,637,-973,27,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,231,coory i,735,-978,27,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+1,232,230,5,1,0,0,0,0,64,0,-1--1--1,,1|(660,-1000)|
+1,233,231,5,1,0,0,0,0,64,0,-1--1--1,,1|(712,-1003)|
+10,234,m2 x vivienda r i,365,-1312,54,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,235,hogares nuevos r i,367,-1235,38,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,236,234,235,0,0,0,0,0,64,0,-1--1--1,,1|(365,-1280)|
+10,237,ac i,66,-736,15,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,238,20,237,1,0,0,0,0,64,0,-1--1--1,,1|(-66,-779)|
+1,239,10,237,0,0,0,0,0,64,0,-1--1--1,,1|(-266,-703)|
+10,240,"ac i t-1",244,-735,27,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,241,240,23,0,0,0,0,0,64,0,-1--1--1,,1|(203,-800)|
+1,242,237,23,0,0,0,0,0,64,0,-1--1--1,,1|(106,-800)|
+1,243,237,240,0,0,0,0,0,64,0,-1--1--1,,1|(142,-736)|
+10,244,suelo de expansion i,381,-773,43,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,245,suelo subu i,631,-740,45,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,246,porcentaje suelo urbano i,367,-706,62,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+1,247,244,33,0,0,0,0,0,64,0,-1--1--1,,1|(431,-756)|
+1,248,245,33,0,0,0,0,0,64,0,-1--1--1,,1|(569,-737)|
+1,249,246,33,0,0,0,0,0,64,0,-1--1--1,,1|(434,-720)|
+10,250,coorx i,571,-624,32,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,251,coory i,624,-676,32,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,252,250,33,0,0,0,0,0,128,0,-1--1--1,,1|(540,-668)|
+1,253,251,33,0,0,0,0,0,128,0,-1--1--1,,1|(575,-698)|
+10,254,Time,2105,-2107,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,255,Time,2162,-2105,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,256,35,37,1,0,0,0,0,64,0,-1--1--1,,1|(321,-930)|
+10,257,total hogares,832,-1321,48,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,258,6,257,0,0,0,0,0,64,0,-1--1--1,,1|(832,-1270)|
+10,259,tasa de crecimiento hogares DANE,820,-1433,73,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,260,Time,818,-1516,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,261,260,259,0,0,0,0,0,64,0,-1--1--1,,1|(818,-1485)|
+10,262,total hogares t0,1281,-1360,57,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,263,hogares nuevos DANE,1012,-1429,59,20,8,131,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,264,total hogares DANE,1145,-1357,63,28,3,131,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,265,264,263,1,0,0,0,0,64,0,-1--1--1,,1|(1096,-1425)|
+1,266,259,263,0,0,0,0,0,64,0,-1--1--1,,1|(916,-1431)|
+1,267,263,264,1,0,0,0,0,64,0,-1--1--1,,1|(1041,-1375)|
+10,268,deficit de vivienda,995,-1320,35,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,269,264,268,1,0,0,0,0,64,0,-1--1--1,,1|(1058,-1317)|
+1,270,257,268,0,0,0,0,0,64,0,-1--1--1,,1|(913,-1320)|
+1,271,262,264,0,0,0,0,0,64,1,-1--1--1,,1|(1222,-1358)|
+10,272,accesibilidad i,762,812,52,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,273,151,272,0,0,0,0,0,64,0,-1--1--1,,1|(762,766)|
+1,274,46,47,0,0,0,0,0,64,0,-1--1--1,,1|(-210,554)|
+10,275,accesibilidad i,432,-626,67,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,276,275,33,0,0,0,0,0,128,0,-1--1--1,,1|(459,-673)|
+10,277,accesibilidad i,863,-997,67,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,278,Time,2130,-2177,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,279,empleo i t0,866,643,42,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+10,280,Time,761,768,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,281,empleo i,761,644,40,20,3,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,282,279,281,0,0,0,0,0,64,1,-1--1--1,,1|(819,643)|
+1,283,281,151,0,0,0,0,0,64,0,-1--1--1,,1|(761,686)|
+10,284,empleo nuevo i,764,-824,57,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,285,Time,1307,543,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,286,285,174,0,0,0,0,0,64,0,-1--1--1,,1|(1307,531)|
+10,287,ac nueva residencial r i,153,-1153,50,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,288,37,287,1,0,0,0,0,64,0,-1--1--1,,1|(154,-1068)|
+1,289,228,287,1,0,0,0,0,64,0,-1--1--1,,1|(266,-1090)|
+1,290,287,235,1,0,0,0,0,64,0,-1--1--1,,1|(259,-1193)|
+10,291,ac sobrante total,67,-610,44,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,292,225,291,0,0,0,0,0,64,0,-1--1--1,,1|(-14,-610)|
+10,293,ac residencial r i,153,-1286,63,22,3,131,0,0,0,0,0,0
+1,294,287,293,0,0,0,0,0,64,0,-1--1--1,,1|(153,-1211)|
+10,295,ac residencial r i t0,151,-1327,59,11,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||255-0-0
+1,296,295,293,0,0,0,0,0,64,1,-1--1--1,,1|(151,-1319)|
+10,297,ac por uso i t0,804,-908,46,11,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||255-0-0
+1,298,297,194,0,0,0,0,0,64,1,-1--1--1,,1|(754,-908)|
+10,299,area sin construir i t0,-518,-504,48,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+1,300,299,40,0,0,0,0,0,64,0,-1--1--1,,1|(-309,-504)|
+1,301,299,13,0,0,0,0,0,64,0,-1--1--1,,1|(-518,-708)|
+1,302,299,20,0,0,0,0,0,64,0,-1--1--1,,1|(-356,-662)|
+1,303,299,225,0,0,0,0,0,64,0,-1--1--1,,1|(-312,-556)|
+1,304,299,11,0,0,0,0,0,64,0,-1--1--1,,1|(-360,-709)|
+1,305,299,237,0,0,0,0,0,64,0,-1--1--1,,1|(-217,-625)|
+10,306,area sin construir i,543,-993,36,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,307,306,5,0,0,0,0,0,128,0,-1--1--1,,1|(609,-1013)|
+1,308,61,63,0,0,0,0,0,64,0,-1--1--1,,1|(-590,9)|
+10,309,atraccion j sin ajustar,687,-250,53,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,310,194,309,0,0,0,0,0,64,0,-1--1--1,,1|(689,-587)|
+1,311,309,73,0,0,0,0,0,64,0,-1--1--1,,1|(763,-250)|
+10,312,factor ajuste atraccion,856,-55,40,19,8,3,0,0,0,0,0,0
+1,313,73,312,0,0,0,0,0,64,0,-1--1--1,,1|(854,-164)|
+10,314,generacion total,995,-55,59,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,315,314,312,0,0,0,0,0,128,0,-1--1--1,,1|(923,-55)|
+1,316,309,70,0,0,0,0,0,64,0,-1--1--1,,1|(687,-155)|
+1,317,312,70,0,0,0,0,0,64,0,-1--1--1,,1|(779,-55)|
+10,318,total viajes por modo,526,479,47,19,8,3,0,0,0,0,0,0
+1,319,145,318,0,0,0,0,0,64,0,-1--1--1,,1|(525,417)|
+10,320,Time,301,-647,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||255-255-255
+1,321,18,225,0,0,0,0,0,64,0,-1--1--1,,1|(-97,-810)|
+1,322,291,237,0,0,0,0,0,64,0,-1--1--1,,1|(66,-671)|
+1,323,168,162,0,0,0,0,0,64,1,-1--1--1,,1|(1179,371)|
+1,324,277,5,1,0,0,0,0,128,0,-1--1--1,,1|(771,-1017)|
+10,325,ac proyectada i,-424,-819,57,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,326,7,325,0,0,0,0,0,64,0,-1--1--1,,1|(-592,-853)|
+1,327,9,325,0,0,0,0,0,64,0,-1--1--1,,1|(-591,-790)|
+10,328,Time,-707,-730,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,329,328,325,0,0,0,0,0,64,0,-1--1--1,,1|(-576,-771)|
+1,330,325,13,0,0,0,0,0,64,0,-1--1--1,,1|(-465,-863)|
+1,331,325,225,0,0,0,0,0,64,0,-1--1--1,,1|(-266,-719)|
+1,332,325,20,0,0,0,0,0,64,0,-1--1--1,,1|(-297,-819)|
+1,333,325,11,0,0,0,0,0,64,0,-1--1--1,,1|(-319,-865)|
+1,334,237,40,0,0,0,0,0,64,0,-1--1--1,,1|(-8,-631)|
+1,335,8,325,0,0,0,0,0,64,0,-1--1--1,,1|(-592,-824)|
+1,336,37,284,1,0,0,0,0,64,0,-1--1--1,,1|(458,-911)|
+1,337,284,281,0,0,0,0,0,64,0,-1--1--1,,1|(762,-102)|
+1,338,157,158,0,0,0,0,0,64,0,-1--1--1,,1|(1822,539)|
+1,339,157,187,0,0,0,0,0,64,0,-1--1--1,,1|(1810,455)|
+10,340,hogares r i,640,-1234,40,20,3,3,0,0,0,0,0,0
+1,341,235,340,0,0,0,0,0,64,0,-1--1--1,,1|(495,-1234)|
+1,342,340,6,0,0,0,0,0,64,0,-1--1--1,,1|(732,-1234)|
+10,343,proporcion hogares r i,834,-1140,42,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,344,340,343,0,0,0,0,0,64,0,-1--1--1,,1|(729,-1190)|
+10,345,Time,834,-1068,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,346,345,343,0,0,0,0,0,64,0,-1--1--1,,1|(834,-1092)|
+1,347,6,343,0,0,0,0,0,64,0,-1--1--1,,1|(833,-1198)|
+1,348,343,5,0,0,0,0,0,64,0,-1--1--1,,1|(761,-1088)|
+10,349,proporcion hogares r i,-698,-49,41,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,350,349,63,0,0,0,0,0,128,0,-1--1--1,,1|(-599,-52)|
+10,351,proporcion hogares r i,-42,573,41,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,352,351,47,0,0,0,0,0,128,0,-1--1--1,,1|(-42,542)|
+10,353,proporcion hogares r i,-44,811,41,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,354,353,148,0,0,0,0,0,128,0,-1--1--1,,1|(-44,779)|
+10,355,hogares r i t0,642,-1270,49,11,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+1,356,355,340,0,0,0,0,0,64,1,-1--1--1,,1|(642,-1263)|
+10,357,proporcion hogares r i t0,1018,-1141,50,20,8,3,0,10,0,0,0,0,-1--1--1,0-0-0,|14||255-0-0
+1,358,357,343,0,0,0,0,0,64,0,-1--1--1,,1|(928,-1140)|
+///---\\\
+:L<%^E!@
+1:C:\Users\david\Universidad de los Andes\Javier Rodrigo Peña Bastidas - LUTI\1. Modelo de estructura urbana y transporte MEUT - copia\Resultados_MEUT.vdf
+9:Resultados_MEUT
+11:Modelo LUTI_08_09_2021.voc
+12:optimization1.VPD
+15:1,0,0,0,0,0
+19:110,0
+27:2,
+34:0,
+4:Time
+5:ac nueva i[i]
+35:Date
+36:YYYY-MM-DD
+37:2017
+38:1
+39:1
+40:0
+41:0
+42:0
+24:2017
+25:2050
+26:2050
+6:a136
+6:a137
+6:a138
+6:a139
+6:a140
+6:AUTO
+6:BICI
+6:BUS
+6:COMERCIAL
+6:DOTACIONAL
+6:IA
+6:IB
+6:IM
+6:INDUSTRIAL
+6:METRO
+6:MOTO
+6:PIE
+6:RESIDENCIAL
+6:RURAL
+6:TM
+6:TREN
