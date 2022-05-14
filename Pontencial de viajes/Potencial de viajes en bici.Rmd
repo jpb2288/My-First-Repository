@@ -1,0 +1,334 @@
+---
+title: "Cálculo del potencial de viajes en bicicleta"
+author: "Javier Pena Bastidas - jpb2288@gmail.com"
+date: "14/05/2022"
+output: html_document
+---
+<!-- Estilo del HTML -->
+<style type="text/css">
+h1 {font-size: 32px;color: #00008B}
+h1.title {font-size: 32px;}
+h2 {font-size: 24px;color: #4169E1}
+h3 {font-size: 24px;color: #4169E1}
+h4 {font-size: 24px;}
+ p {font-size: 18px; color: black} 
+li { font-size: 18px;color: black}
+.table th:not([align]) {text-align: left;}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
+```
+
+## Por qué de esta metodología
+- Requiere un mínimo de datos, de los cuales la mayoría se utilizan normalmente para la gestión de la movilidad de una ciudad. 
+- Es más factible que las ciudades logren hacer este análisis ya que su información base no requiere encuestas específicas a ciclistas ni dispositivos de conteo.
+
+## Fuentes de datos
+- Encuesta de movilidad o encuesta de origen y destino (EOD)
+
+## Caso práctico
+
+En este documento se describe el cálculo del potencial de viajes en bicicleta para la ciudad de Lima, Perú utilizando el lenguaje de programación R y la información de la encuesta del plan maestro de transporte urbano para viajes personales en el área metropolitana de Lima y Callao del año 2011, elaborada por la Agencia de Cooperación Internacional del Japón (JICA)  
+La base de datos de la encuesta se compone de tres tablas :  households(hogares), members (personas) y trips (viajes). Para este estudio se empleará únicamente la información en la tabla denominada trips, la cual tiene un total de 133.542 observaciones que terminan representando un total de 20'920.074 de viajes cuando de multiplican por su factor de expansión. En la tabla de viajes el factor de expansión de denomina EFACTOR   
+
+El siguiente código llama las librerías de R necesarias y lee la tabla de datos
+ 
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(knitr)
+
+trips <- read_excel("2011/3 trips.xlsx")
+```
+
+
+Un análisis preliminar muestra que la encuesta tiene los siguientes motivos de viaje:
+
+```{r, echo = F}
+particion_proposito<- trips |> 
+  group_by(PURPOSE) |> 
+  summarize(viajes=sum(EFACTOR)) |> 
+  mutate(viajes=round(viajes,0))  |>  
+  mutate(prop=100*viajes/sum(viajes)) |> 
+  mutate(prop=round(prop,2)) 
+
+ID_PROPOSITO<-0:11
+proposito<-c(
+ "No Indica", 
+ "A trabajar",
+ "A estudiar",
+ "Por trabajo",
+ "Compras",
+ "Comer",
+ "Hacer ejercicios",
+ "Llevar a un familiar",
+ "Pasear",
+ "Esparcimiento",
+ "Otro particular",
+ "Volver a casa")
+
+COD_PROPOSITO <- data.frame(ID_PROPOSITO, proposito)
+
+particion_modal <- left_join(COD_PROPOSITO, particion_proposito, by= c("ID_PROPOSITO" = "PURPOSE"))
+
+kable(particion_modal, 
+      col.names =c("Id_propósito","Propósito","Viajes","Proporción (x100)"),
+      caption = "Tabla 2 - Partición por propósito de los viajes") 
+```
+
+Como se puede ver el propósito (11) "volver a casa" representa un 48% de los viajes, para este estudio se decide excluir estos viajes, bajo el supuesto que las personas que salen de una zona en horas de la mañana vuelven en horas de la tarde por la misma infraestructura, en consecuencia, se necesita diseñar para un solo sentido de los viajes. Adicionalmente, este porcentaje está en línea con el hecho de que no todas las personas con infraestructura para bicicleta de calidad en el entorno de su casa o trabajo va a decidir usar este modo de transporte. Como lo menciona [Roger Geller](https://blog.altaplanning.com/understanding-the-four-types-of-cyclists-112e1d2e9a1b) en un estudio para la ciudad de Portland, existen 4 tipos de ciclistas de los cuales solamente los “interesados pero preocupados” estarían interesados en usar la bicicleta si las condiciones fueran mejores, este grupo corresponde aproximadamente al 50% de las personas.
+
+Otro enfoque valido consistiría en escoger los viajes en un rango de horas denominado como horas de mayor demanda de la mañana. Por lo tanto, se recomienda que los profesionales que quieran replicar esta metodología ajusten este parámetro de acuerdo con el contexto local y a su experiencia.
+
+El filtro de los datos se hace con la siguiente línea de código
+
+
+```{r}
+trips <- trips |> filter(!PURPOSE %in% c(0,11) & VEHTIME>0)
+```
+
+Con esta base depurada hacemos un análisis adicional al separar los viajes en los diferentes modos de transporte, encontramos que estos se distribuyen de la siguiente forma
+
+```{r, echo = F}
+particion_modal<- trips |> 
+  group_by(PRIMODE) |> 
+  summarize(viajes=sum(EFACTOR)) |> 
+  mutate(viajes=round(viajes,0)) |>  
+  mutate(prop=100*viajes/sum(viajes)) |> 
+  mutate(prop=round(prop,2)) 
+
+ID_MODO<-1:17
+MODO<-c(
+"Caminando",
+"Bicicleta ",
+"Motocicleta",
+"Mototaxi",
+"Auto Particular", 
+"Taxi", 
+"Colectivo", 
+"Combi", 
+"Microbus",
+"Omnibus",
+"Metropolitano",
+"Camion Pequeno",
+"Camion",
+"Trailer",
+"Tren",
+"Movilidad particular",
+"Otros")
+
+COD_MODO <- data.frame(ID_MODO, MODO)
+
+particion_modal <- left_join(COD_MODO, particion_modal, by= c("ID_MODO" = "PRIMODE"))
+
+kable(particion_modal, 
+      col.names =c("Id_Modo","Modo","Viajes","Proporción (x100)"),
+      caption = "Tabla 1 - Partición modal de los viajes") 
+
+```
+
+Se evidencia que los viajes en bicicleta constituyen un 0,39% del total de viajes. Con el fin de aproximarse a una cuantificación de cuál sería la participación modal una vez se incluya un potencial de viajes en bicicleta se puede aplicar la metodología y supuestos descritos a continuación.
+
+
+## Paso 1
+
+Lo primero es identificar los viajes en bicicleta, con el fin de hacer una distribución de estos en intervalos de 5 min. Es decir, para cada intervalo de tiempo se va a tener una cantidad x de viajes. Lo importante es conseguir el % de viajes en bicicleta para cada intervalo de tiempo.
+
+El siguiente código realiza la selección de los viajes en bicicleta y los guarda en una tabla que llamamos "trips_bici" 
+
+```{r}
+trips_bici<- trips |>  filter(PRIMODE==2)
+```
+
+La mejor forma de visualizar esta distribución es mediante una tabla con intervalos de tiempo y un histograma asociado a esta. En este ejemplo se utiliza intervalos de 5 minutos, pero esto se puede ajustar según las necesidades de análisis y las características de los viajes en la ciudad
+
+Si se desea refinar la metodología, se puede pasar todo a distancia mediante velocidades para cada modo, si no es posible es mejor mantenerse con tiempo entendiendo que esta metodología es un acercamiento y primeras luces para análisis más posteriores.
+
+```{r}
+# Generamos los intervalos de tiempo
+trips_bici$intervalo_min <- 
+  cut(trips_bici$VEHTIME, breaks = seq(0,60,5), right = T) |> 
+  fct_explicit_na(">61")
+
+#Identificamos los viajes que se realizan dentro de una misma zona (para este ejemplo se entiende como las Zonas de Análisis de Tráfico de Lima)
+trips_bici<-mutate(trips_bici,intra=if_else(TAZ1==TAZ2,"Intrazonal","Interzonal"))
+
+#Creamos la tabla con los viajes  y el porcentaje en cada intervalo
+trips_bici |> 
+  group_by(intervalo_min) |> 
+  summarize(viajes=sum(EFACTOR)) |> 
+  mutate(viajes=round(viajes,0)) |>  
+  mutate(prop=100*viajes/sum(viajes)) |> 
+  mutate(prop=round(prop,1)) |>  
+  kable( col.names =c("Intervalo (min)","Viajes","Proporción (x100)"),
+         caption = "Tabla 3 - Distribución de los viajes en bicicleta") 
+```
+
+Se observa que después de los 30 minutos la cantidad de viajes es baja, mientras que en el rango de 5 a 10 minutos se encuentran la mayoría de los desplazamientos de las personas que se movilizan en bicicleta. Las siguientes líneas de código generan un histograma de estos valores 
+
+```{r}
+ggplot() + 
+  geom_col(data=trips_bici, aes(x=intervalo_min, y = EFACTOR, fill = intra))+ 
+  labs(title = "Distribución de los viajes en bicicleta",
+       x = "Intervalo (min)",
+       y = "Viajes")+
+  guides(fill=guide_legend(title="Tipo de viaje"))+
+  scale_fill_brewer(palette="Paired")
+```
+
+Esta gráfica permite identificar que los viajes al interior de las zonas (intrazonales) se dan en su mayoría en los intervalos menores a 20 minutos como es de esperarse. Este análisis es complementario a la metodología, si en la encuesta los datos de zona no se recolectaron no es un problema para el cálculo del potencial de viajes en bicicleta. También se debe notar que en el intervalo de 50 a 55 minutos no existen datos y por lo tanto ese intervalo se eliminó del gráfico pero se tendrá en cuenta para análisis posteriores.
+
+Una visualización de utilidad adicional es la curva acumulada de la proporción de viajes, el código a continuación genera este gráfico junto al histograma ya construido
+ 
+```{r}
+# Se genera en la memoria la tabla con los viajes en bicicleta y el porcentaje en cada intervalo
+tabla_bici <- trips_bici |> 
+  group_by(intervalo_min) |> 
+  summarize(viajes=sum(EFACTOR)) |>  
+  mutate(percent = cumsum(viajes)/sum(viajes))
+
+# Se imprime el gráfico. Fuente https://sebastianrothbucher.github.io/datascience/r/visualization/ggplot/2018/03/24/two-scales-ggplot-r.html
+ggplot() +  
+  geom_bar(mapping = aes(x = tabla_bici$intervalo_min, 
+                         y = tabla_bici$viajes), stat = "identity", fill = "grey") +
+  geom_line(mapping = aes(x = tabla_bici$intervalo_min, 
+                          y = tabla_bici$percent*11189.5337, group=1), size = 1, color = "orange")+
+  scale_y_continuous(name = "Viajes", 
+    sec.axis = sec_axis(~./11189.5337, name = "Proporción acumulada de viajes", 
+      labels = function(b) { paste0(round(b * 100, 0), "%")})) +
+  theme(
+    axis.title.y = element_text(color = "black"),
+    axis.title.y.right = element_text(color = "orange"))+
+  labs(title = "Distribución de los viajes en bicicleta y proporción acumulada",
+       x = "Intervalo (min)")
+
+```
+
+## Paso 2
+
+Con la información de los viajes en bicicleta organizada se procede a obtener la misma tabla de distribución de frecuencia de viaje pero para los otros modos de transporte. La metodología permite realizar filtros para tener en cuenta únicamente los viajes de otros modos que sean factibles de hacerse en bicicleta. Ej: un viaje en auto es factible de ser remplazado por uno en bicicleta, no así un viaje de un camión de 3 ejes. De igual manera un viaje a pié de 10 min es factible de hacerse en bicicleta, no así un viaje en moto de 120 minutos.
+
+Para este caso decidimos mantener los viajes en todos los modos diferentes a la bicicleta y los almacenamos en un objeto llamado "trips_otros" con la siguiente línea de código. 
+
+```{r}
+trips_otros<- trips |>  filter(! PRIMODE %in% c(2))
+```
+
+Y aplicamos el siguiente código para obtener una tabla con el porcentaje en cada intervalo. Cabe notar que el código es el mismo que para la tabla de viajes en bicicleta pero remplazando "trips_bici" por "trips_otros" 
+
+```{r}
+# Generamos los intervalos de tiempo
+trips_otros$intervalo_min <- 
+  cut(trips_otros$VEHTIME, breaks = seq(0,60,5), right = T) |> 
+  fct_explicit_na(">61")
+
+#Creamos la tabla con los viajes  y el porcentaje en cada intervalo
+trips_otros |> 
+  group_by(intervalo_min) |> 
+  summarize(viajes=sum(EFACTOR)) |> 
+  mutate(viajes=round(viajes,0)) |>  
+  mutate(prop=100*viajes/sum(viajes)) |> 
+  mutate(prop=round(prop,1)) |>  
+  kable( col.names =c("Intervalo (min)","Viajes","Proporción (x100)"),
+         caption = "Tabla 4 - Distribución de los viajes en otros modos")
+```
+
+## Paso 3 
+
+En este paso procedemos a unir las tablas obtenidas. El objetivo es poder multiplicar los viajes en otros modos por las proporciones de los viajes en bicicleta. Este procedimiento permite restar importancia a los viajes de mayor duración en otros modos e incrementar la importancia de aquellos que están en el rango de alta probabilidad de ser viajes en bicicleta. El resultado final es un número sintético de viajes potenciales.
+
+Las siguiente líneas de código permiten unir las dos tablas
+
+```{r}
+# Se genera en la memoria la tabla con los viajes en otros modos en cada intervalo
+tabla_otros<- trips_otros |> 
+  group_by(intervalo_min) |> 
+  summarize(viajes=sum(EFACTOR)) |> 
+  mutate(viajes=round(viajes,0))
+
+# Se genera en la memoria la tabla con los viajes en bicicleta y el porcentaje en cada intervalo
+tabla_bici <- trips_bici |> 
+  group_by(intervalo_min) |> 
+  summarize(viajes=sum(EFACTOR)) |> 
+  mutate(viajes=round(viajes,0)) |>  
+  mutate(prop=100*viajes/sum(viajes)) |> 
+  mutate(prop=round(prop,1))
+
+# Se unen las dos tablas 
+tabla_potencial <- 
+  tabla_otros |> 
+  left_join(tabla_bici[,c("intervalo_min","prop")], by = "intervalo_min")
+
+tabla_potencial[is.na(tabla_potencial)]<-0
+
+kable(tabla_potencial,
+      col.names =c("[A] Intervalo (min)","[B] Viajes otros modos","[C] Proporción de viajes bici (x100)"),
+      caption = "Tabla 4 - Viajes en otros modos y proporción de viajes en bicicleta")
+```
+
+Para obtener el número de viajes potenciales multiplicamos las columnas [B] y [C] en la tabla anterior. Las siguentes líneas de código generan una nueva variable en la tabla 4 con los viajes potenciales por intervalo.
+
+```{r}
+tabla_potencial<-
+  tabla_potencial|>
+  mutate(v_pontenciales=round(viajes*prop/100,0))
+
+kable(tabla_potencial,
+      col.names =c("[A] Intervalo (min)","[B] Viajes otros modos","[C] Proporción de viajes bici (x100)",
+                   "[D] Viajes potenciales bici"),
+      caption = "Tabla 4.1 - Viajes en otros modos, proporción y potencial de viajes en bicicleta")
+```
+
+Finalmente, hacemos el cálculo de la nueva partición modal al descontar de los otros modos los viajes que se podrían realizar en bicicleta, y sumarlos a los viajes que actualmente se hacen en eeste modo. La siguiente parte del código describe este procedimiento 
+
+```{r}
+# Ponemos los intervalos en tiempo en la base de viajes general "trips"
+trips$intervalo_min <- 
+  cut(trips$VEHTIME, breaks = seq(0,60,5), right = T) |> 
+  fct_explicit_na(">61")
+
+# Unimos la información de las proporciones de viajes en bicicleta a la tabla general 
+trips <- trips |> left_join(tabla_potencial[,c("intervalo_min","prop")], by="intervalo_min")
+
+# Calculamos un factor de expansión reducido para los otros modos y generamos un factor de expanción que recoja los viajes potenciales en bicicleta
+trips <- trips |> 
+  mutate(fe_bici  = if_else(PRIMODE==2,EFACTOR,EFACTOR*prop/100)) |> 
+  mutate(fe_otros = if_else(PRIMODE!=2,EFACTOR*(1-(prop/100)),0))
+
+# Generamos la nueva tabla de partición modal con el factor de expanción reducido 
+particion_modal<- trips |> 
+  group_by(PRIMODE) |> 
+  summarize(viajes=sum(fe_otros)) |> 
+  mutate(viajes=round(viajes,0)) 
+
+# Agregamos a la tabla de partición modal la suma de los viajes en bici actuales y potenciales 
+particion_modal[particion_modal$PRIMODE==2,"viajes"]<-sum(trips$fe_bici)
+
+# Damos formato e imprimimos la tabla
+particion_modal<-
+  particion_modal|>  
+  mutate(prop=100*viajes/sum(viajes)) |> 
+  mutate(prop=round(prop,2)) 
+
+ID_MODO<-1:17
+MODO<-c(
+"Caminando","Bicicleta ","Motocicleta","Mototaxi",
+"Auto Particular","Taxi","Colectivo","Combi", "Microbus",
+"Omnibus","Metropolitano","Camion Pequeno","Camion",
+"Trailer", "Tren","Movilidad particular","Otros")
+
+COD_MODO <- data.frame(ID_MODO, MODO)
+
+particion_modal <- left_join(COD_MODO, particion_modal, by= c("ID_MODO" = "PRIMODE"))
+
+kable(particion_modal, 
+      col.names =c("Id_Modo","Modo","Viajes","Proporción (x100)"),
+      caption = "Tabla 5 - Partición modal de los viajes con potencial bicicleta") 
+
+```
+
+Como se puede observar con esta metodología se encuentra que hasta un 11.92% de los viajes de Lima y Callao se podrían realizar en bicicleta cuando las condiciones de infraestructura mejoren y se den los insentivos suficientes de para generar el cambio modal.
+
+Un paso adicional a esta metodología consiste en identificar los viajes potenciales en zonas más desagregadas, como barrios, localidades, municipalidades o cualquier otra agrupación geográfica, con el fin de determinar cuales son las zonas que tienen mayor potencial de generar y atraer viajes ciclistas.
